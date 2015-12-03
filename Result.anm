@@ -1,0 +1,45 @@
+'Plugin name: MathPad.dll (Array of Numerical Methods for Notepad++)
+'Version: 0.0.5.4 - Built: 412. (Unicode version)
+'By: Carlo Somigliana, email: somic@libero.it, site: www.semelinanno.com
+'Original Web Page: www.semelinanno.com\downloads\MathPad\MathPad_Page.html
+'---------------------------------------------------------------------------
+
+'Incorporates library aNuMet.dll - rel. 0.0.5.5
+'------------------------------------------------------------------------------------
+'BatchRun : Time 27/11/2015 - 21:48:02
+'Input file: C:\Users\Tony\AppData\Roaming\Factorio\mods\NESTT_0.1.0\control.lua
+'Executed Commands: 11, Errors found: 11
+'************************************************************************************
+Ln 11: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 15: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 17: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 18: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 21: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 22: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 26: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 27: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 28: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 29: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+
+Ln 30: Expression = :
+ Result => ===> ERROR n. = 25: Undefined Command/Keyword    (Module: eval)
+'--- End Of BatchRun : Time 27/11/2015 - 21:48:02 - (Execution Time: 0 ms)----------

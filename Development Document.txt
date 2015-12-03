@@ -1,0 +1,86 @@
+
+-----Basic functionality-----
+
+Add a custom NESTT train
+
+Add a custom NESTT wagon
+
+Add a GUI to name the train 
+
+Add a GUI/Hotkey that allows user to enter the train surface
+
+Surface(Dimension) Naming convention:
+	"nestt"+"_" 
+
+-----Target functionality-----
+
+Play with train friction, fuel and power. Perhaps add a custom fuel drain
+
+Add rails and train to start of game, maybe some ore patches.
+
+Tutorial GUI box.
+
+Tutorial video.
+
+Custom Map Gen for NESTT surface
+
+Add a black square entity that will fill up map gen so it can be removed to expand the train.
+
+Add chests to locomotive surface for ore dump, Add a fuel chest for coal dump for train engine, add tanks for liquid dump
+
+Add a Vacuum Mining scoop at the front that allows train to mine, chop and suck up liquids.
+
+Dummy entity so players can be in the same train
+-----Nice little features-----
+
+Remember player position in train
+
+
+Generate NESTT surface floor as concrete
+
+Add a GUI count of base materials in train mining hold
+
+Moving pollution from inside to outside
+
+Train wide power
+
+Add a laser guild (a laser that gives you a guild line of the track ahead, for connecting to an exiting track at a specific point)
+
+-----Extended functionality-----
+
+Add FARL
+
+Add a rail laying drone, can only place and pick up rails, and burn trees.
+
+Add rail laying blueprints/auto laying.
+
+Underground belt and pipe that is almost the length of the train compartment.
+
+Changing Train Segments(Special station/robot/crane and animation for this?)
+	do this by iterating everything in one compartment, saving to a list, and loading to another compartment
+
+Expand the train horizontally
+	
+Add a railed balcony to the side of the train that allows user movement
+	
+Entering and exiting from different train compartments
+	
+Textures
+	Custom textures for the train
+	Factories inside the train show up outside
+	
+Train Turrets
+	Turrets placed inside the train show up outside
+	
+Enemies
+	Spawn like mad if the train isn't moving
+	Spawn randomly in front of the train for more blood
+	Spawn hives on the tracks for even more blood
+
+Add an invisible dummy vehicle entity that follow the train so that 2 or more players can get on the same train.
+
+-----Future Ideas-----
+
+Add an ultimate train mounted weapon and boss
+
+Other NEST mods, airship, howl's moving castle, battleship, captain forever
