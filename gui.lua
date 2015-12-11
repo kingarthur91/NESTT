@@ -73,10 +73,23 @@ destroyGui = function(player)
 	end
 end,
 
+createProgressBar = function(player)
+	if player.gui.left.surfProg ~= nil then return end
+	local left = player.gui.left
+	local surfProg = gui.add(left, {type="frame", direction="vertical", name="surfProg",caption = "surface gen progress"})
+	local prog =  gui.add(surfProg, {type="progressbar", name="prog",caption = "progress", size=100, value = 0})
+	return prog
+end,
+
+destroyProgressBar = function(player)
+	if player.gui.left.surfProg == nil then return end
+	player.gui.left.surfProg.destroy()
+end,
+
 debugInfo = function(event, farl, player)
 	local index = event.player_index
 	local player = game.players[index]
-	debugPrint("debug")
+	--debugPrint("debug")
 end,
 
 onguiClick = function(event)

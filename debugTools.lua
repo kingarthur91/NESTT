@@ -39,6 +39,7 @@ end
 debugPrint = function(o)
 	if debug_enabled then 
 		print_all(o)
+		print_all(debug.traceback())
 	end
 end
 

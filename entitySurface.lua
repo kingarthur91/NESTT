@@ -27,11 +27,24 @@ function entitySurface:new(o)
 end
 
 --initialize the global values we need, this will be called by control.on_init
---savedSurfaces is structured is follows: savedSurfaces.name = {surface = surface, entity = entity}
+--[[
+--globals are stored in this format:
+global.entitySurfaceData = {
+	validIndex = 1, 
+	savedSurfaces = {
+		[surfaceName] = {
+			surface = surface, 
+			entity = entity, 
+			surfaceData = {data that you can use and retrieve}
+		}
+	}
+}
+--]]
+
 
 onInit_functions.entitySurfaceIni = function ()
 	if global.entitySurfaceData ~= nil then return nil end
-	global.entitySurfaceData = {validIndex = 1, savedSurfaces = {}, players = {}}
+	global.entitySurfaceData = {validIndex = 1, savedSurfaces = {}}
 end
 
 --override this for your own prefix
@@ -86,7 +99,7 @@ end
 
 --make a surface name it entitySurface_# and save it to global.entitySurfaceData.savedSurfaces
  
-function entitySurface:makeSurface  (entity,mapGenSettings)
+function entitySurface:makeSurface(entity,mapGenSettings)
 	if not self:canHaveSurface(entity) then return nil end
 	--check if surface has already been created
 	if self:getSurfaceByEntity(entity) ~= nil then return nil end
@@ -112,7 +125,7 @@ function entitySurface:makeSurface  (entity,mapGenSettings)
 		newSurf = game.create_surface(name, mapGenSettings)
 	end
 	remote.call("RSO", "ignoreSurface", name)
-	data.savedSurfaces[name] = {surface = newSurf, entity = entity}
+	data.savedSurfaces[name] = {surface = newSurf, entity = entity, surfaceData = {}}
 	return newSurf
 end
 
@@ -142,4 +155,13 @@ function entitySurface:hasClassPrefix (surface,prefix)
 	return false
 end
 
+function entitySurface:getSurfaceTable(surfaceName)
+	if surfaceName.name then surfaceName = surfaceName.name end
+	return global.entitySurfaceData.savedSurfaces[surfaceName]
+end
 
+function entitySurface:requestChunkGen(surface, radius, pos)
+	if not surface then printErr("requestChunkGen to a nil surface") return end
+	pos = pos or {0,0}
+	surface.request_to_generate_chunks(pos,radius)
+end

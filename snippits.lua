@@ -231,16 +231,34 @@ end
 
 
 
+/c game.player.selected.amount = 90
+
+/c game.player.selected.force = game.forces.player
+
+/c game.player.selected.damage({Amount = 1, force = game.player.force})
+
+/c game.player.surface.create_entity{name = "copper-ore-particle", position = game.player.selected.position, movement = {0.1,0.1},height = 0.01,vertical_speed = 0.05,frame_speed= 1 }
+
+/c game.player.surface.create_entity{name = "leaf-particle", position = game.player.selected.position}
+
+/c p(game.player.vehicle.orientation)
+
+
+/c game.player.surface.create_entity{name = "mining-beam", position = game.player.selected.position, source = game.player.selected, source_position = game.player.selected.position, target = game.player.vehicle }
 
 
 
-function outer()
-	local up1 = "hello"
-	local function inner ()
-		print(up1)
-	end
-	f = inner
-end
-outer()
-f()
-print(debug.getupvalue(f,1))
+/c e = game.player.surface.create_entity{
+				name = "steel-chest",
+				position = {-6.5,-18.5},
+				force = game.forces.player,
+				destructible = false,
+				minable = false
+			}
+			
+			
+			
+/c beam = game.player.surface.create_entity({name = "mining-beam", position = {0,0}, source = game.player.character, target = game.player.selected})
+
+
+/c p(game.player.surface.find_entity("mining-beam",game.player.position))
