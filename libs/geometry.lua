@@ -120,43 +120,80 @@ end
 --returns the points in the circle
 function geometry.pointsInCircle(c,rSqr,points)
 	local pointsIn = {}
+	local pointsOut = {}
 	c = c.position and {c.position.x,c.position.y} or c
 	for i,point in ipairs(points) do
 		local p = point.position and {point.position.x,point.position.y} or point
 		if ((p[1] - c[1]) * (p[1] - c[1]) + (p[2] - c[2]) * (p[2] - c[2])) < rSqr then
 			table.insert(pointsIn, point)
+		else
+			table.insert(pointsOut, point)
 		end
 	end
-	return pointsIn
+	return pointsIn,pointsOut
 end
 
 --returns points that are on the same half plane of a vector
 function geometry.isOnSameSideOfVector(vStart,vEnd,points)
 	local pointsIn = {}
+	local pointsOut = {}
 	vStart = vStart.position and {vStart.position.x,vStart.position.y} or vStart
 	vEnd = vEnd.position and {vEnd.position.x,vEnd.position.y} or vEnd
 	local v = geometry.subPos(vEnd,vStart)
 	for i,point in ipairs(points) do
-		local p = point.position and {point.position.x,point.position.y}
+		local p = point.position and {point.position.x,point.position.y} or point
 		local vp = subPos(p,vStart)
 		--dot product
 		if (v[1] * vp[1] + v[2] * vp[2]) > 0 then
 			table.insert(pointsIn, point)
+		else
+			table.insert(pointsOut, point)
 		end
 	end
-	return pointsIn
+	return pointsIn,pointsOut
 end
 
 --returns points that are in semicircle, radiusPoint is a point on the circle pointing in the direction of the full part of the semicircle
 function geometry.pointsInSemicircle(c,radiusPoint,points)
 	local pointsIn = {}
-	pointsIn = geometry.isOnSameSideOfVector(c,radiusPoint,points)
+	local pointsOut = {}
+	local pointsOut2 = {}
+	pointsIn,pointsOut = geometry.isOnSameSideOfVector(c,radiusPoint,points)
 	local rSqr = subPos(radiusPoint,c)
 	rSqr = rSqr[1] * rSqr[1] + rSqr[2] * rSqr[2]
-	pointsIn = geometry.pointsInCircle(c,rSqr,pointsIn)
-	return pointsIn
+	pointsIn,pointsOut2 = geometry.pointsInCircle(c,rSqr,pointsIn)
+	for i,v in ipairs(pointsOut2) do 
+		table.insert(pointsOut, v)
+	end
+	return pointsIn,pointsOut
 end
-	
+
+local function round(num)
+	return math.floor(num + 0.5)
+end
+
+local function roundPos(pos)
+	return {round(pos[1]),round(pos[2])}
+end
+
+function geometry.bBoxToTilePos(bbox)
+	--snap to closest tile (tile centers are offset by 0.5)
+	local tl = roundPos(bbox[1])
+	local br = roundPos(bbox[2])
+	local cols = br[1] - tl[1]
+	local rows = br[2] - tl[2]
+	local posTable = {}
+	local pos = {tl[1]+0.5,tl[2]+0.5}
+	for i = 1, rows do
+		for j = 1, cols do
+			table.insert(posTable, {pos[1],pos[2]})
+			pos[1] = pos[1] + 1
+		end
+		pos[1] = tl[1]+0.5
+		pos[2] = pos[2] + 1
+	end
+	return posTable
+end
 	
 	
 	

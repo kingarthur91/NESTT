@@ -24,8 +24,6 @@ debugButton = true
 
 function on_load() on_init() end
 
-
-
 function on_init()
 	pClosure.init()
 	nesttMiner:init()
@@ -38,7 +36,6 @@ function on_init()
 		end
 	end
 	global.onTickFunctions = global.onTickFunctions or {}
-	
 	global.onTickFunctions["refreshGui"] = function()
 		for k,player in pairs(game.players) do
 			gui.destroyGui(player)
@@ -46,9 +43,6 @@ function on_init()
 		end
 		global.onTickFunctions["refreshGui"] = nil
 	end
-	
-	
-	
 end
 
 debug_i = 1
@@ -59,75 +53,15 @@ local function on_gui_click(event)
 	
 	if name == "debug" then 
 		--debugPrint("nesttDebug")
-		
-		local r = 8
-		local vhead = {0,-3}
-		local vR = {0,-r}
-		local train = game.player.vehicle
-		local point = {train.position.x, train.position.y}
-
-		local theta = train.orientation * math.pi * 2
-		vhead = geometry.rotate(vhead, theta)
-		vR = geometry.rotate(vR, theta)
-		point = geometry.addPos(point,vhead)
-		vR = geometry.addPos(point,vR)
-		--invisible-chest
-		if invis then invis.destroy() invis = nil end
-		invis = game.player.surface.create_entity{name = "invisible-chest", position = point}
-			
-		
-		--tri = geometry.makeTriangleFromPointVector( point, vector , width)
-		--[[
-		for k,v in pairs( tri ) do
-			game.player.surface.create_entity{name = "copper-ore-particle", position = v, movement = {0,0},height = 0.01,vertical_speed = 0.05,frame_speed= 1 }
-		end--]]
-		
-		local bbox = geometry.circleBBox(point,r)
-		
-		for k,v in pairs( bbox ) do
-			game.player.surface.create_entity{name = "iron-ore-particle", position = v, movement = {0,0},height = 0.01,vertical_speed = 0.05,frame_speed= 1 }
+		local ppos = game.player.position
+		local bbox = {{ppos.x,ppos.y},{ppos.x+1,ppos.y+1.4}}
+		local pos = geometry.bBoxToTilePos(bbox)
+		print(pos)
+		for _,p in pairs(pos) do
+			game.player.surface.create_entity{name = "tree-02-red", position = {p[1],p[2]}}
 		end
-		
-		local ores = game.get_surface(1).find_entities_filtered{area = bbox, type= "resource"}
-	
-		
-		local oresFiltered = geometry.pointsInSemicircle(point,vR ,ores)
-		
-		
-		
-		ents = ents or {}
-		for k,v in pairs(ents) do
-			if v then 
-				v.destroy()
-			end
-		end
-		ents = {}
-		
-		for k,ent in pairs(oresFiltered) do
-			local v = {ent.position.x, ent.position.y}
-			local movement = geometry.subPos(point,v)
-			movement = geometry.scale(movement,0.035)
-			local ent = game.player.surface.create_entity({name = "mining-beam", position = v, source_position = {v[1],v[2]+1}, target = invis})
-			table.insert(ents,ent)
-		end
-		--]]
-		--debugPrint(_VERSION)
-		--l:logTable(_ENV,2)
-		--l:dump()
-		--[[
-		waitTillTrueThenRun( 
-			function() 
-				if game.player.surface.name ~= "nauvis" then return true end
-				return false
-			end,
-			function()
-				game.player.print("left nauvis")
-			end
-		)
-		--]]
 	end
 end
-
 	
 script.on_init(on_init)
 

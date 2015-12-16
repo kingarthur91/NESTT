@@ -38,8 +38,8 @@ entityData = {
 		end,
 			
 		entityGen = {
-			templatesChest = {   
-			--resource templates chest
+			masterChest = {   
+			--resource master template chest
 				create = {
 					name = "steel-chest",
 					position = {-6.5,-18.5},
@@ -55,6 +55,19 @@ entityData = {
 				},
 				destructible = false,
 				minable = false
+			},
+			waterTank = {
+				create = {
+					name = "storage-tank",
+					position = {6.5,21.5},
+				},
+			},
+			oilTank = {
+				create = {
+					name = "storage-tank",
+					position = {-6.5,21.5},
+					direction = 2,
+				},
 			},
 			{	--fuel inserter
 				create = {
@@ -92,12 +105,19 @@ entityData = {
 	miningBeam = {
 		name = "mining-beam",
 		helperEntity = "invisible-chest",
-		width = 30,
-		height = 15,
+		radius = 8,
 		headOffset = {0,-3},
 		count = 7,
-		
+		miningPower = 1,
 	},
+	
+	oreChest = {
+		bBoxL = {{-7,-18},{-6,24}},
+		bBoxR = {{6,-18},{7,24}},
+		templateChestName = "wooden-chest",
+		masterMaxStackPerItem = 10,
+	}
+	
 },
 
 surfacePrefix = "nestt_",

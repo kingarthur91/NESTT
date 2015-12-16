@@ -51,3 +51,24 @@ function iarea( area )
 	end
 end
 
+function destroyEntityTable( t )
+	if not t then return end
+	assert( type(t) == "table", "must pass in a table")
+	for k,v in pairs(t) do
+		assert(v.destroy, "element is not an entity")
+		v.destroy()
+		t[k] = nil
+	end
+end
+
+--input a table of tile positions, return the tile positions that are named tileName
+function filterTiles(surface, tilePos, tileName)
+	local filtered = {}
+	for _,pos in pairs(tilePos) do
+		local name = surface.get_tile(pos[1],pos[2]).name
+		if name == tileName then 
+			table.insert(filtered,pos)
+		end
+	end
+	return filtered
+end

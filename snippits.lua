@@ -92,7 +92,7 @@ end
 
 /c game.player.insert{name="concrete",count=100}
 
-/c script.on_event(defines.events.on_tick, function(event) game.player.surface.set_tiles{{name = "dirt", position = {x = game.player.position.x + 1, y = game.player.position.y}}}
+/c script.on_event(defines.events.on_tick, function(event) game.player.surface.set_tiles{{name = "water", position = {x = game.player.position.x + 1, y = game.player.position.y}}}
 end
 )
 
@@ -108,7 +108,7 @@ end
    
  end)
 
-/c game.player.print(tostring(game.surfaces["pocket"].get_tile(1,1).name))
+
 
 /c game.player.print (game.player.position.x .. " , " .. game.player.position.y)
 
@@ -160,7 +160,7 @@ end
 /c for y=-2,2 do 
      for x=-2,2 do 
        game.surfaces.nauvis.create_entity({
-           name="stone",
+           name="crude-oil",
            amount=5000,
            position={game.player.position.x+x,game.player.position.y+y}
          }) 
@@ -262,3 +262,14 @@ end
 
 
 /c p(game.player.surface.find_entity("mining-beam",game.player.position))
+
+/c p( game.player.selected.stack)
+
+/c t = game.player.selected
+
+/c t = game.player.selected.get_inventory(1).get_contents()
+
+/c p(game.player.selected.prototype.mineable_properties)
+
+
+/c p(game.player.surface.get_tile(game.player.position.x, game.player.position.y).name)
