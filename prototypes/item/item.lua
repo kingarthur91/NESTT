@@ -20,4 +20,17 @@ data:extend(
       place_result = "nestt-wagon",
       stack_size = 5
     },
+	{
+      type = "item",
+      name = "nestt-chest",
+      icon = "__base__/graphics/icons/wooden-chest.png",
+      flags = {"goes-to-quickbar"},
+      subgroup = "storage",
+      order = "a[items]-b[nestt-chest]",
+      place_result = "nestt-chest",
+      stack_size = 50
+    },
   })
+  
+  
+

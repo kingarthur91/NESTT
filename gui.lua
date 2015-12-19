@@ -68,9 +68,11 @@ end,
 
 destroyGui = function(player)
 	if player.valid then
-		if player.gui.left.nestt == nil then return end
+		if player.gui.left.nestt == nil then return false end
 	player.gui.left.nestt.destroy()
+	return true
 	end
+	return false
 end,
 
 createProgressBar = function(player)

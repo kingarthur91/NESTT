@@ -24,5 +24,15 @@ data:extend(
       },
       result = "nestt-wagon"
     },
+	{
+      type = "recipe",
+      name = "nestt-chest",
+      enabled = "true",
+      ingredients =
+      {
+        {"wood", 2},
+      },
+      result = "nestt-chest"
+    },
 	
   })

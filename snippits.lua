@@ -273,3 +273,7 @@ end
 
 
 /c p(game.player.surface.get_tile(game.player.position.x, game.player.position.y).name)
+
+/c p(game.get_surface(1).can_place_entity{name = "cargo-wagon", position = game.player.position})
+
+/c p(game.player.selected.train.carriages)

@@ -124,7 +124,8 @@ function entitySurface:makeSurface(entity,mapGenSettings)
 	else
 		newSurf = game.create_surface(name, mapGenSettings)
 	end
-	remote.call("RSO", "ignoreSurface", name)
+	
+	--remote.call("RSO", "ignoreSurface", name)
 	data.savedSurfaces[name] = {surface = newSurf, entity = entity, surfaceData = {}}
 	return newSurf
 end

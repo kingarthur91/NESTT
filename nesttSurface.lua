@@ -1,4 +1,5 @@
-require "nesttChunkGen"
+local nesttChunkGen = require "nesttChunkGen"
+local geometry = require "libs/geometry"
 require "nesttConfig"
 nesttSurface = entitySurface:new()
 
@@ -22,23 +23,26 @@ end
 function nesttSurface:exitNesttSurface(player)
 	local train = self:getEntityBySurface(player.surface)
 	if train == nil then return nil end
-	self:enterSurface( player, train.surface, train.position)
+	--teleport the player in front of the train
+	local offsetVec = {0,-2.6 -0.01} 
+	local theta = train.orientation * math.pi * 2
+	offsetVec = geometry.rotate(offsetVec, theta)
+	local newPosition = geometry.addPos(train.position,offsetVec)
+	self:enterSurface( player, train.surface, newPosition)
 	player.driving = true
 end
 
-function nesttSurface:enterNesttSurface(player)
-	if global.generatingSurface then return end
-	local train = self:getNesttTrainPlayerIsIn(player)
-	if train == nil then printErr("train nil") return end
-	if not self:getSurfaceByEntity(train) then
-		local surf = self:makeSurface(train)
-		--self:enterSurfaceByEntity(player, train)
-		global.generatingSurface = true
-		self:requestChunkGen(surf, 2)
-		local surfName = surf.name
-		local prog = gui.createProgressBar(player)
-		local closure = pClosure.new("surfaceGen")
-		closure.progress = function(funcName)
+function nesttSurface:makeSurfaceAndEntities(player)
+	local train = player.vehicle
+	local surf = self:makeSurface(train)
+	--self:enterSurfaceByEntity(player, train)
+	global.generatingSurface = true
+	self:requestChunkGen(surf, 2)
+	local surfName = surf.name
+	local prog = gui.createProgressBar(player)
+	local closure = pClosure.new("surfaceGen")
+	closure.progress = 
+		function(funcName)
 			local count = 0
 			local step = 1/8
 			for i = -1, 0 do
@@ -51,28 +55,34 @@ function nesttSurface:enterNesttSurface(player)
 			prog.value = count
 			if count >= 0.99 then 
 			global.generatingSurface = false
+			global.generatedSurface = true
 			global.onTickFunctions["progress"] = nil 
 			end
 		end
-		
-		global.onTickFunctions["progress"] = function(funcName)
+	global.onTickFunctions["progress"] = 
+		function(funcName)
 			local closure = pClosure.new("surfaceGen")
 			closure.progress(funcName)
 		end
-		waitTillTrueThenRun(
-			function()
-				if prog.value >= 0.99 then return true end
-			end,
-			function()
-				nesttChunkGen:LocomoTilesGen(surf)
-				nesttChunkGen:LocomoEntityGen(surf)
-				miner = nesttMiner:new(surf)
-				self:enterSurfaceByEntity(player, train)
-				gui.destroyProgressBar(player)
-			end
-		)
-		return
-	end
+	waitTillTrueThenRun(
+		function()
+			if prog.value >= 0.99 then return true end
+		end,
+		function()
+			nesttChunkGen:LocomoTilesGen(surf)
+			nesttChunkGen:LocomoEntityGen(surf)
+			miner = nesttMiner:new(surf)
+			--self:enterSurfaceByEntity(player, train)
+			self.createGui(player)
+			gui.destroyProgressBar(player)
+		end
+	)
+	return
+end
+
+function nesttSurface:enterNesttSurface(player)
+	local train = self:getNesttTrainPlayerIsIn(player)
+	if train == nil then printErr("train nil") return end
 	self:enterSurfaceByEntity(player, train)
 end
 
@@ -90,9 +100,20 @@ function nesttSurface.createGui(player)
 	end
 end
 
+local function gift(player)
+	player.insert{name = "nestt-wagon", count = 2}
+	print("giving player 2 nestt-wagons")
+end
+
 function nesttSurface:onPlayerDrivingChangedState(event)
 	local player = game.players[event.player_index]
 	if (player.vehicle ~= nil and player.vehicle.name == locomotive.name) then
+		if global.generatingSurface then return end
+		if not global.generatedSurface then
+			self:makeSurfaceAndEntities(player)
+			gift(player)
+			return 
+		end
 		self.createGui(player)
 	end
 	if player.vehicle == nil and player.gui.left.nestt ~= nil and not self:isEntitySurface(player.surface) then
@@ -110,5 +131,11 @@ function nesttSurface:onVanillaGen(event)
 	nesttChunkGen:generate(surface,area)
 end
 
+
+
+
+--locomotive collision_box = {{-0.6, -2.6}, {0.6, 2.6}},
+
+--wagon collision_box = {{-0.6, -2.4}, {0.6, 2.4}},
 
 

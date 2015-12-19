@@ -1,7 +1,7 @@
 require "chunkGen"
 
 
-nesttChunkGen = chunkGen:new()
+local nesttChunkGen = chunkGen:new()
 
 
 function nesttChunkGen:generate(surface,area)
@@ -12,7 +12,7 @@ function nesttChunkGen:generate(surface,area)
 end
 
 function nesttChunkGen:LocomoTilesGen(surface)
-	self:setTilesMultiArea(surface, nesttConfig.entityData.locomotive.tileAreas(),"train-floor")
+	self:setTilesMultiArea(surface, nesttConfig.entityData.locomotive.tileAreas())
 end
 
 function nesttChunkGen:LocomoEntityGen(surface)
@@ -32,6 +32,24 @@ function nesttChunkGen:LocomoEntityGen(surface)
 	--print(data)
 end
 
-function nesttChunkGen:WagonTilesGen(surface)
-	self:setTilesMultiArea(surface, nesttConfig.entityData.locomotive.tileAreas())
+function nesttChunkGen:wagonTilesGen(surface,wagonsGenerated)
+	local offset = wagonsGenerated * nesttConfig.entityData.wagon.height
+		+ nesttConfig.entityData.locomotive.height
+	
+	local chunkY = (offset - nesttConfig.entityData.wagon.height / 2 + 0.5) / 32
+	chunkY = math.floor(chunkY)
+	local hasUnGenChunk
+	for i = 0,2 do
+		if not surface.is_chunk_generated{-1,i+chunkY} then
+			hasUnGenChunk = true
+		end
+		if not surface.is_chunk_generated{0,i+chunkY} then
+			hasUnGenChunk = true
+		end
+	end
+	if hasUnGenChunk then return false end
+	self:setTilesMultiArea(surface, nesttConfig.entityData.wagon.tileAreas(offset))
+	return true
 end
+
+return nesttChunkGen

@@ -47,6 +47,19 @@ entityData = {
 				destructible = false,
 				minable = false
 			},
+			extentionChest = {
+			--chest for extending the train
+				create = {
+					name = "nestt-chest",
+					position = {-5.5,-19.5},
+				},
+				insert = {
+					name = "nestt-wagon",
+					count = 1,
+				},
+				destructible = false,
+				minable = false
+			},
 			fuelChest = {	
 			--train fuel chest
 				create = {
@@ -85,7 +98,7 @@ entityData = {
 			},
 			{	--coal tamplate
 				create = {
-					name = "wooden-chest",
+					name = "nestt-chest",
 					position = {7.5,-16.5},
 				},
 				insert = {
@@ -99,7 +112,25 @@ entityData = {
 	
 	wagon = {
 		name = "nestt-wagon",
-	
+		width = 16,
+		height = 48,
+		tileAreas = function(yOffset)
+			local width = 16
+			local height = 48
+			local corrWidth = 4
+			local corrHeight = 2
+			local tileName = "train-floor"
+			local shape = {}
+			local corr = {
+			{-corrWidth/2,-height/2 + yOffset},
+			{corrWidth/2-1,-height/2 + corrHeight - 1 + yOffset}}
+			table.insert(shape,corr)
+			local body = {
+			{-width/2,-height/2+corrHeight + yOffset},
+			{width/2-1,height/2-1 + yOffset}}
+			table.insert(shape,body)
+				return shape, tileName
+		end,
 	},
 	
 	miningBeam = {
@@ -114,7 +145,7 @@ entityData = {
 	oreChest = {
 		bBoxL = {{-7,-18},{-6,24}},
 		bBoxR = {{6,-18},{7,24}},
-		templateChestName = "wooden-chest",
+		templateChestName = "nestt-chest",
 		masterMaxStackPerItem = 10,
 	}
 	

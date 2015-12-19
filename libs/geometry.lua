@@ -10,6 +10,26 @@ local sin = math.sin
 local cos = math.cos
 local pi = math.pi
 
+function geometry.distanceSq( p1, p2 )
+	if p1.x then
+		p1 = {p1.x,p1.y}
+	end
+	if p2.x then
+		p2 = {p2.x,p2.y}
+	end
+	return (p1[1]-p2[1])*(p1[1]-p2[1]) + (p1[2]-p2[2])*(p1[2]-p2[2])
+end
+
+function geometry.dot( p1, p2 )
+	if p1.x then
+		p1 = {p1.x,p1.y}
+	end
+	if p2.x then
+		p2 = {p2.x,p2.y}
+	end
+	return p1[1]*p2[1] + p1[2]*p2[2]
+end
+
 function geometry.addPos( p1, p2 )
 	if p1.x then
 		p1 = {p1.x,p1.y}
@@ -195,8 +215,7 @@ function geometry.bBoxToTilePos(bbox)
 	return posTable
 end
 	
-	
-	
+
 	
 	
 return geometry

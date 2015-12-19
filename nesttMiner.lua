@@ -1,4 +1,5 @@
 local geometry = require "libs/geometry"
+local nesttChunkGen = require "nesttChunkGen"
 
 local nesttMiner = {}
 
@@ -186,6 +187,12 @@ function nesttMiner:refreshOreChests()
 	
 	local oil = nesttConfig.entityData.locomotive.entityGen.oilTank
 	data.oilTank = trainSurface.find_entity(oil.create.name, oil.create.position)
+	
+	--get the train extentionChest
+	if not data.extentionChest then 
+		local chestData = nesttConfig.entityData.locomotive.entityGen.extentionChest
+		data.extentionChest = trainSurface.find_entity(chestData.create.name, chestData.create.position)
+	end
 end
 
 local function makeTriangle(train, width, height, headOffset)
@@ -195,6 +202,57 @@ local function makeTriangle(train, width, height, headOffset)
 	headOffset = geometry.rotate(headOffset, theta)
 	startPoint = geometry.addPos(startPoint,headOffset)
 	return geometry.makeTriangleFromPointVector( startPoint, dirVec , width)
+end
+
+function nesttMiner:addWagon(wagon) 
+	local data = self.surfaceTable.surfaceData
+	local trainEnt = self.surfaceTable.entity
+	local outSurf = trainEnt.surface
+	local train = trainEnt.train
+	local lastSeg = train.carriages[#train.carriages]
+	local offsetVec = {1,5.2 +0.01} --the length of trains segments is 4.8 - 5.2
+	local offsetVec2 = {-1,5.2 +0.01}
+	local theta = lastSeg.orientation * math.pi * 2
+	offsetVec = geometry.rotate(offsetVec, theta)
+	offsetVec2 = geometry.rotate(offsetVec2, theta)
+	if #train.carriages > 30 then  return false end
+	
+	if data.lastDeletedWagonPos then
+		if geometry.distanceSq(data.lastDeletedWagonPos, trainEnt.position) < 36 then return false end
+		data.lastDeletedWagonPos = nil
+	end
+	if #train.carriages > 1 then
+		local secondLastSeg = train.carriages[#train.carriages - 1]
+		local backwardsVec = geometry.subPos(lastSeg.position, secondLastSeg.position)
+		--flip orientation if it is wrong (dot product < 0)
+		if geometry.dot(offsetVec,backwardsVec) < 0 then
+			offsetVec = {-offsetVec[1],-offsetVec[2]}
+		end
+		if geometry.dot(offsetVec2,backwardsVec) < 0 then
+			offsetVec2 = {-offsetVec2[1],-offsetVec2[2]}
+		end
+	end
+	local newPosition = geometry.addPos(lastSeg.position,offsetVec)
+	local newPosition2 = geometry.addPos(lastSeg.position,offsetVec2)
+	if not outSurf.can_place_entity{name = wagon.name, position = newPosition} then
+		newPosition = newPosition2 
+		if not outSurf.can_place_entity{name = wagon.name, position = newPosition} then 
+			data.lastDeletedWagonPos = trainEnt.position
+			return false 
+		end
+	end
+	local newWagon = outSurf.create_entity{name = wagon.name, position = newPosition}
+	if not newWagon or not newWagon.train then 
+		data.lastDeletedWagonPos = trainEnt.position
+		return false 
+	end
+	--if the wagon was added, but not connected or wrong connection
+	if trainEnt.train.carriages[#trainEnt.train.carriages] ~= newWagon then 
+		newWagon.destroy()
+		data.lastDeletedWagonPos = trainEnt.position
+		return false 
+	end
+	return true
 end
 
 --called every tick
@@ -251,53 +309,95 @@ function nesttMiner:onTick()
 	--destroy all beams and return if #res is 0
 	if not res or #res == 0 then
 		destroyEntityTable(data.beamHelperEnt)
-		return
-	end
+	else
 	--get resources that are full and filter them
-	
 	--pick random resource patches at least one per resource type, unless full (not fully implemented)
-	local randIndices = {}
-	local numOfAvailableBeams = math.min(beamSettings.count - #inRangeBeamHelpers, #res)
-	for i = 1, numOfAvailableBeams do
-		randIndices[i] = math.random(#res)
+		local randIndices = {}
+		local numOfAvailableBeams = math.min(beamSettings.count - #inRangeBeamHelpers, #res)
+		for i = 1, numOfAvailableBeams do
+			randIndices[i] = math.random(#res)
+		end
+		--remove the out of range entities
+		destroyEntityTable(outRangeBeamHelpers)
+		--reset the global table
+		data.beamHelperEnt = {}
+		--make graphical beam entity
+		for i = 1, numOfAvailableBeams do
+			data.beamHelperEnt[i] = worldSurface.create_entity{
+				name = beamSettings.helperEntity, 
+				position = beamStartPoint}
+			worldSurface.create_entity{
+				name = beamSettings.name, 
+				position = {0,0},
+				source = data.headHelperEnt,
+				target = data.beamHelperEnt[i]}
+			local randI = randIndices[i]
+			local randOff = {math.random()-0.5,math.random()-0.5}
+			data.beamHelperEnt[i].teleport(geometry.addPos(res[randI].position,randOff))
+		end
+		--add the inRangeBeamsBack
+		for i,v in ipairs(inRangeBeamHelpers) do
+			table.insert(data.beamHelperEnt,v)
+		end
+		
+		--refresh oreChests
+		self:refreshOreChests()
+		--harvest the resources
+		local resList = {}
+		for i = 1, beamSettings.miningPower do
+			randIndices[i] = math.random(#res)
+			local randI = randIndices[i]
+			local ore = res[randI]
+			table.insert(resList,ore)
+		end
+		self:tryMineResources(resList)
 	end
-	--remove the out of range entities
-	destroyEntityTable(outRangeBeamHelpers)
-	--reset the global table
-	data.beamHelperEnt = {}
-	--make graphical beam entity
-	for i = 1, numOfAvailableBeams do
-		data.beamHelperEnt[i] = worldSurface.create_entity{
-			name = beamSettings.helperEntity, 
-			position = beamStartPoint}
-		worldSurface.create_entity{
-			name = beamSettings.name, 
-			position = {0,0},
-			source = data.headHelperEnt,
-			target = data.beamHelperEnt[i]}
-		local randI = randIndices[i]
-		local randOff = {math.random()-0.5,math.random()-0.5}
-		data.beamHelperEnt[i].teleport(geometry.addPos(res[randI].position,randOff))
+	--add wagons
+	local wagonName = nesttConfig.entityData.wagon.name
+	if data.extentionChest then 
+		local inv = data.extentionChest.get_inventory(1)
+		if inv.get_item_count(wagonName) ~= 0 then
+			if self:addWagon({name = wagonName}) then
+			--create wagon tiles
+				inv.remove{name = wagonName, count = 1}
+			end
+		end
 	end
-	--add the inRangeBeamsBack
-	for i,v in ipairs(inRangeBeamHelpers) do
-		table.insert(data.beamHelperEnt,v)
+	--gen wagon tiles
+	if not data.wagonsGenerated then data.wagonsGenerated = 0 end
+	local wagonCount = 0
+	for _,v in pairs(train.train.carriages) do
+		if v.name == wagonName then
+			wagonCount = wagonCount + 1
+		end
+	end
+	if wagonCount > data.wagonsGenerated then 
+		if nesttChunkGen:wagonTilesGen(trainSurface,data.wagonsGenerated) then 
+			data.wagonsGenerated = data.wagonsGenerated+1
+		end
 	end
 	
-	--refresh oreChests
-	self:refreshOreChests()
-	--harvest the resources
-	local resList = {}
-	for i = 1, beamSettings.miningPower do
-		randIndices[i] = math.random(#res)
-		local randI = randIndices[i]
-		local ore = res[randI]
-		table.insert(resList,ore)
+	--set train speed
+	if not data.speed then data.speed = {setSpeed = 0, playerChangedSpeed = false} end
+	local playerControl = false
+	if train.passenger then 
+		if train.passenger.riding_state.acceleration ~= defines.riding.acceleration.nothing then
+			playerControl = true
+			data.speed.playerChangedSpeed = true
+		end
 	end
-	self:tryMineResources(resList)
+	if not playerControl then
+		if data.speed.playerChangedSpeed == true then
+			data.speed.setSpeed = train.train.speed
+			data.speed.playerChangedSpeed = false
+		end
+		train.train.speed = data.speed.setSpeed
 
+	end
+	
+	--self heal
+	train.health = train.health + 0.05 
 end
-
 
 
 
@@ -314,23 +414,13 @@ end
 			amount_min = 1,
 			amount_max = 1,
 			probability = 1}
-		}
-	
-	}
-	
+
 	crude-oil:
 	infinite = true,
     minimum = 750,
     normal = 7500, --1/s
-	
 
 --]]
-
-
-
-
-
-
 
 
 return nesttMiner

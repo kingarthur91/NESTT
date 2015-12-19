@@ -36,14 +36,18 @@ function on_init()
 		end
 	end
 	global.onTickFunctions = global.onTickFunctions or {}
+	
 	global.onTickFunctions["refreshGui"] = function()
 		for k,player in pairs(game.players) do
-			gui.destroyGui(player)
-			nesttSurface.createGui(player)
+			if gui.destroyGui(player) then
+				nesttSurface.createGui(player)
+			end
 		end
 		global.onTickFunctions["refreshGui"] = nil
 	end
 end
+
+
 
 debug_i = 1
 local function on_gui_click(event)
@@ -53,13 +57,7 @@ local function on_gui_click(event)
 	
 	if name == "debug" then 
 		--debugPrint("nesttDebug")
-		local ppos = game.player.position
-		local bbox = {{ppos.x,ppos.y},{ppos.x+1,ppos.y+1.4}}
-		local pos = geometry.bBoxToTilePos(bbox)
-		print(pos)
-		for _,p in pairs(pos) do
-			game.player.surface.create_entity{name = "tree-02-red", position = {p[1],p[2]}}
-		end
+		global.onTickFunctions["miner_1"]:addWagon({name = "cargo-wagon"})
 	end
 end
 	
