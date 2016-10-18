@@ -1,4 +1,3 @@
-require "defines"
 require "util"
 require "lib"
 geometry = require "libs/geometry"

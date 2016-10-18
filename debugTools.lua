@@ -1,5 +1,5 @@
 local gamePrint = function (text)
-	game.player.print(tostring(text))
+	
 end
 
 
