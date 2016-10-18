@@ -82,12 +82,6 @@ invisible_chest.picture =
       shift = {0.2, 0}
     }
 
-local straightRail = copyPrototype("straight-rail", "straight-rail", "straight-rail")
-straightRail.flags = {"placeable-neutral", "building-direction-8-way"}
-
-local curvedRail = copyPrototype("curved-rail", "curved-rail", "curved-rail")
-curvedRail.flags = {"placeable-neutral", "building-direction-8-way"}
-
 --time_to_live = 60 * 60 * 2,
 
 local smallBiter = copyPrototype("unit", "small-biter", "small-biter")
@@ -103,8 +97,6 @@ data:extend({
 	nestt_wagon, 
 	mining_beam,
 	invisible_chest,
-	straightRail,
-	curvedRail,
 	smallBiter,
 	nesttChest,
 })

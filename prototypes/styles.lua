@@ -44,7 +44,7 @@ data.raw["gui-style"].default["nestt_textfield_small"] =
 data.raw["gui-style"].default["nestt_button"] =
   {
     type = "button_style",
-    parent = "default",
+    parent = "button_style",
     font = "nestt-small-bold"
   }
 data.raw["gui-style"].default["nestt_checkbox"] =
