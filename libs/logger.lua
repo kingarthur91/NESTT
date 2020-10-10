@@ -1,6 +1,7 @@
 --[[--
 Simple logger by Dark
 --]]--
+--require "defines"
 
 local _M = {}
 local Logger = {prefix='log_'}

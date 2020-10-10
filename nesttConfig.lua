@@ -11,7 +11,7 @@ entityData = {
 			width = 32, 
 			height = nil,
 			water = "none",
-			autoplace_controls = {frequency = "none"},
+			--autoplace_controls = {frequency = "none"},
 			},
 		width = 16,
 		height = 48,

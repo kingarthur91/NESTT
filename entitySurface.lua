@@ -122,6 +122,7 @@ function entitySurface:makeSurface(entity,mapGenSettings)
 	if mapGenSettings == nil then 
 		newSurf = game.create_surface(name)
 	else
+		log(serpent.block(mapGenSettings))
 		newSurf = game.create_surface(name, mapGenSettings)
 	end
 	

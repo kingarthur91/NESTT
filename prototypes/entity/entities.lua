@@ -1,6 +1,7 @@
 
-local nestt_locomotive = copyPrototype("locomotive", "diesel-locomotive", "nestt-locomotive")
+local nestt_locomotive = copyPrototype("locomotive", "locomotive", "nestt-locomotive")
 nestt_locomotive.icon = "__NESTT__/graphics/icons/nestt-locomotive.png"
+nestt_locomotive.icon_size = 32
 nestt_locomotive.max_speed = 0.2
 nestt_locomotive.max_health = 100000
 nestt_locomotive.weight = 2000
@@ -49,6 +50,7 @@ nestt_locomotive.resistances =
   
 local nestt_wagon = copyPrototype("cargo-wagon", "cargo-wagon", "nestt-wagon")
 nestt_wagon.icon = "__NESTT__/graphics/icons/nestt-wagon.png"
+nestt_wagon.icon_size = 32
 nestt_wagon.max_health = 100000
 nestt_wagon.weight = 1000
 nestt_wagon.friction_force = 0.0015--0.0015
@@ -75,16 +77,25 @@ invisible_chest.fast_replaceable_group = nil
 invisible_chest.inventory_size = 48
 invisible_chest.picture =
     {
-      filename = "__base__/graphics/entity/steel-chest/steel-chest.png",
+      filename = "__NESTT__/graphics/icons/empty.png",
       priority = "very-low",
-      width = 0,
-      height = 0,
+      width = 1,
+      height = 1,
       shift = {0.2, 0}
     }
 
+--local straightRail = copyPrototype("straight-rail", "straight-rail", "straight-rail")
+local straightRail = data.raw["straight-rail"]["straight-rail"]
+straightRail.flags = {"placeable-neutral", "building-direction-8-way"}
+
+--local curvedRail = copyPrototype("curved-rail", "curved-rail", "curved-rail")
+local curvedRail = data.raw["curved-rail"]["curved-rail"]
+curvedRail.flags = {"placeable-neutral", "building-direction-8-way"}
+
 --time_to_live = 60 * 60 * 2,
 
-local smallBiter = copyPrototype("unit", "small-biter", "small-biter")
+--local smallBiter = copyPrototype("unit", "small-biter", "small-biter")
+local smallBiter = data.raw["unit"]["small-biter"]
 --smallBiter.time_to_live = 60 * 3
 --smallBiter.time_before_removed = 60 * 3
 smallBiter.movement_speed = 0.3
@@ -97,6 +108,8 @@ data:extend({
 	nestt_wagon, 
 	mining_beam,
 	invisible_chest,
+	straightRail,
+	curvedRail,
 	smallBiter,
 	nesttChest,
 })

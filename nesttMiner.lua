@@ -48,10 +48,11 @@ function nesttMiner:tryInsertItem(itemStack)
 	local oreChests = data.oreChests
 	local masterCache = data.masterCache
 	local name = itemStack.name
-	local count = itemStack.count
-	local excess
+	local count = itemStack.count or 0
+	local excess = 0
 	--try to put into masterChest
 	if (masterCache[name] and masterCache[name] < maxStack) or (not masterCache[name]) then
+		--game.print("mastercache " .. name .. "(" .. (masterCache[name] or 0)..")")
 		masterCache[name] = masterCache[name] or 0
 		local freeSpace = maxStack - masterCache[name]
 		local toInsert = math.min(freeSpace,count)
@@ -60,6 +61,7 @@ function nesttMiner:tryInsertItem(itemStack)
 		itemStack.count = toInsert
 		if masterChest.insert(itemStack) == 0 then
 			masterCache[name] = masterCache[name] + toInsert
+			--game.print("mastercache " .. name .. "(" .. (masterCache[name] or 0)..")")
 		else
 			excess = count
 		end
@@ -71,6 +73,7 @@ function nesttMiner:tryInsertItem(itemStack)
 	--try to put into oreChests
 	if oreChests[name] then 
 		excess = excess - oreChests[name].insert(itemStack)
+		--game.print("orechest " .. itemStack.name .. "(" .. (oreChests[name] or 0)..")")
 	end
 	if excess == 0 then return nil end
 	itemStack.count = excess
@@ -91,7 +94,7 @@ local function addToTank(tankEnt, name, amount)
 	local prevAmount = fluidbox[1] and fluidbox[1].amount or 0
 	if prevAmount + amount > 2500 then return false end
 	
-	fluidbox[1] = {type = name,amount = prevAmount + amount}
+	fluidbox[1] = {type = name,name = name, amount = prevAmount + amount}
 	return true
 end
 
@@ -108,6 +111,7 @@ end
 function nesttMiner:tryMineResources(resources)
 	local data = self.surfaceTable.surfaceData
 	for _,res in pairs(resources) do
+		--game.print("mining " .. res.name)
 		if res.name == "water" then
 			addToTank(data.waterTank,"water",30)
 		elseif res.name == "crude-oil" then 
@@ -121,22 +125,26 @@ function nesttMiner:tryMineResources(resources)
 			if not excess then
 				res.destroy()
 			end
-		elseif res.prototype.mineable_properties.minable
-			and res.prototype.mineable_properties.products[1].type == "item" then
-			local mineCount = res.prototype.mineable_properties.products[1].amount_max
-			local name = res.prototype.mineable_properties.products[1].name
-			local stack = {name = name,count = mineCount}
-			local excess = self:tryInsertItem(stack)
-			if not excess then excess = {count = 0} end
-			if excess.count == mineCount then return end
-			if res.type == "resource" then
-				if res.amount - mineCount + excess.count <= 0 then 
-					res.destroy()
-				else
-					res.amount = res.amount - mineCount + excess.count
-				end
-			else 
-				res.destroy()
+		elseif res.prototype.mineable_properties.minable and res.prototype.mineable_properties.products[1].type == "item" then
+			local minres = res.prototype.mineable_properties.products[1]
+			local mineCount = res.prototype.mineable_properties.products[1].amount_max or res.prototype.mineable_properties.products[1].amount
+			--game.print("res " .. res.name .. " (" .. (minres.amount_max or 0).. "," .. (minres.amount_min or 0) .. "," .. (minres.amount or 0) .. ")")
+			if mineCount then
+			    local name = res.prototype.mineable_properties.products[1].name
+  			    local stack = {name = name,count = mineCount}
+			    local excess = self:tryInsertItem(stack)
+   			    if not excess then excess = {count = 0} end
+			    if excess.count == mineCount then return end
+			    if res.type == "resource" then
+				    if res.amount - mineCount + excess.count <= 0 then 
+				        res.destroy()
+				    else
+				    	res.amount = res.amount - mineCount + excess.count
+				    
+			    	end
+			    else 
+			    	res.destroy()
+			    end
 			end
 		end
 	end
@@ -380,8 +388,9 @@ function nesttMiner:onTick()
 	--set train speed
 	if not data.speed then data.speed = {setSpeed = 0, playerChangedSpeed = false} end
 	local playerControl = false
-	if train.passenger then 
-		if train.passenger.riding_state.acceleration ~= defines.riding.acceleration.nothing then
+	if train.get_driver() then 
+		local driver = train.get_driver()
+		if driver.riding_state.acceleration ~= defines.riding.acceleration.nothing then
 			playerControl = true
 			data.speed.playerChangedSpeed = true
 		end

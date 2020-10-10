@@ -1,22 +1,24 @@
 gui = {
 
 styleprefix = "nestt_",
-
+--[[
 defaultStyles = {
   label = "label",
   button = "button",
   checkbox = "checkbox"
 },
-
+]]--
 bindings = {},
 
 callbacks = {},
 
 add = function(parent, e, bind)
   local gtype, name = e.type, e.name
+  --[[
   if not e.style and gui.defaultStyles[gtype] then
 	e.style = gui.styleprefix..gtype
   end
+  ]]--
   if bind then
 	if e.type == "checkbox" then
 	  if e.state == nil then
@@ -52,13 +54,13 @@ createGui = function(player)
 	if player.gui.left.nestt ~= nil then return end
 	local left = player.gui.left
 	local nestt = gui.add(left, {type="frame", direction="vertical", name="nestt"})
-	local rows = gui.add(nestt, {type="table", name="rows", colspan=1})
+	local rows = gui.add(nestt, {type="table", name="rows", column_count = 1,colspan=1})
 	
 	local span = 3
 	if debugButton then
 		span = 4
 	end
-	local buttons = gui.add(rows, {type="table", name="buttons", colspan=span})
+	local buttons = gui.add(rows, {type="table", name="buttons", column_count = span, colspan=span})
 	gui.addButton(buttons, {name="enterExit", caption="Enter/Exit"}, guiScripts.enterExit)
 
 	if debugButton then

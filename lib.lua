@@ -1,5 +1,8 @@
 function copyPrototype(type, name, newName)
   local p = table.deepcopy(data.raw[type][name])
+  if p == nil then
+    return nil
+  end
   p.name = newName
   if p.minable and p.minable.result then
     p.minable.result = newName

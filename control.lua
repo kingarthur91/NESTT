@@ -1,3 +1,4 @@
+--require "defines"
 require "util"
 require "lib"
 geometry = require "libs/geometry"
@@ -62,7 +63,7 @@ end
 	
 script.on_init(on_init)
 
-script.on_load(on_load)
+--script.on_load(on_load)
 
 script.on_configuration_changed(on_configuration_changed)
 
